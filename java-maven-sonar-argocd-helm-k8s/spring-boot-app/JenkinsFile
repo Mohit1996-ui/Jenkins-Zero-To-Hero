@@ -62,7 +62,7 @@ pipeline {
                     ls -ltr java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/
 
                     # Update the deployment file with the build number
-                    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+                    sed -i 's/replaceImageTag/${BUILD_NUMBER}/g' java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
 
                     git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
