@@ -9,13 +9,14 @@ pipeline {
         stage('Checkout') {
             steps {
                 sh 'echo passed'
-                // Uncomment this to checkout the repo
+                // Uncomment this line for actual checkout if needed
                 // git branch: 'main', url: 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
             }
         }
         stage('Build and Test') {
             steps {
                 sh 'ls -ltr'
+                // Build the project and create a JAR file
                 sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
             }
         }
@@ -31,7 +32,7 @@ pipeline {
         }
         stage('Build and Push Docker Image') {
             environment {
-                DOCKER_IMAGE = "mohit290996/ultimate-cicd:${BUILD_NUMBER}" // Your Docker image
+                DOCKER_IMAGE = "mohit290996/ultimate-cicd:${BUILD_NUMBER}" // Updated to your Docker image
                 REGISTRY_CREDENTIALS = credentials('docker-cred')
             }
             steps {
@@ -52,9 +53,8 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                     script {
-                        // Ensure the current directory is the correct one
                         dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests') {
-                            // Update the git user info
+                            // Set Git user info
                             sh 'git config user.email "abhishek.xyz@gmail.com"'
                             sh 'git config user.name "Abhishek Veeramalla"'
                             
@@ -63,7 +63,8 @@ pipeline {
                                 BUILD_NUMBER=${BUILD_NUMBER}
                                 sed -i "s|abhishek5/ultimate-cicd:[0-9]*|abhishek5/ultimate-cicd:${BUILD_NUMBER}|g" deployment.yml
                                 git add deployment.yml
-                                git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                                git status
+                                git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
                                 git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
                             '''
                         }
