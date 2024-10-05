@@ -58,19 +58,11 @@ pipeline {
                             sh 'git config user.email "abhishek.xyz@gmail.com"'
                             sh 'git config user.name "Abhishek Veeramalla"'
                             
-                            // Update the deployment.yml file with the new image tag
+                            // Replace the entire image line in deployment.yml
                             sh '''
                                 BUILD_NUMBER=${BUILD_NUMBER}
-                                sed -i "s|abhishek5/ultimate-cicd:[0-9]*|mohit290996/ultimate-cicd:${BUILD_NUMBER}|g" deployment.yml
+                                sed -i "s|^.*image:.*|        image: mohit290996/ultimate-cicd:${BUILD_NUMBER}|g" deployment.yml
                                 git add deployment.yml
                                 git status
                                 git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
                                 git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
-                            '''
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
